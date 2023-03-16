@@ -1,0 +1,20 @@
+{
+  "name": "include-external-npm-packages",
+  "version": "1.0.0",
+  "description": "Serverless webpack example",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1336.0",
+    "serverless": "^3.28.1",
+    "serverless-offline": "^12.0.4",
+    "serverless-rspack": "link:../../",
+    "typescript": "^4.9.5",
+    "@rspack/core": "^0.1.0"
+  },
+  "dependencies": {
+    "fbgraph": "^1.4.4"
+  }
+}

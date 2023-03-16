@@ -1,0 +1,32 @@
+service: serverless-rspack-typescript-example
+package:
+  individually: true
+# Add the serverless-rspack plugin
+plugins:
+  - serverless-rspack
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+functions:
+  hello:
+    handler: src/handler.hello
+    events:
+      - http:
+          method: get
+          path: hello
+          integration: lambda
+  goodbye:
+    handler: src/handler2.goodbye
+    events:
+      - http:
+          method: get
+          path: goodbye
+          integration: lambda
+custom:
+  rspack:
+    rspackConfig: 'rspack.config.js'
+    packager: 'yarn'
+    includeModules: true

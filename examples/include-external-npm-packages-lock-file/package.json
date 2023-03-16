@@ -1,0 +1,23 @@
+{
+  "name": "include-external-npm-packages-lock-file",
+  "version": "1.0.0",
+  "description": "Serverless webpack example",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1336.0",
+    "serverless": "^3.28.1",
+    "serverless-offline": "^12.0.4",
+    "serverless-rspack": "file:../../",
+    "typescript": "^4.9.5",
+    "@rspack/core": "^0.1.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "fbgraph": "^1.4.4",
+    "lodash": "^4.17.21",
+    "lodash.isequal": "^4.5.0"
+  }
+}

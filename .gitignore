@@ -1,0 +1,10 @@
+node_modules
+dist
+.rspack
+.serverless
+coverage
+
+.idea
+.history
+/.vscode
+.DS_Store

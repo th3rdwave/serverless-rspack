@@ -1,0 +1,24 @@
+service: include-external-npm-packages
+
+# Add the serverless-rspack plugin
+plugins:
+  - serverless-rspack
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+custom:
+  rspack:
+    rspackConfig: 'rspack.config.js'
+    packager: 'yarn'
+    includeModules: true
+
+functions:
+  first:
+    handler: handler.hello
+    events:
+      - http:
+          method: GET
+          path: first
+          integration: lambda

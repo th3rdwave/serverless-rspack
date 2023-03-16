@@ -1,0 +1,19 @@
+{
+  "name": "serverless-rspack-typescript-example",
+  "version": "1.0.0",
+  "description": "Serverless rspack example using Typescript",
+  "main": "handler.js",
+  "scripts": {
+    "start": "sls offline start",
+    "build": "sls package",
+    "test": "sls invoke local -f hello -p event.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serverless": "^3.28.1",
+    "serverless-offline": "^12.0.4",
+    "serverless-rspack": "link:../../",
+    "typescript": "^4.9.5",
+    "@rspack/core": "^0.1.0"
+  }
+}
