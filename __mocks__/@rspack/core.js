@@ -23,6 +23,7 @@ const compilerMock = {
     },
   },
   plugin: jest.fn().mockImplementation((name, cb) => cb(null, {})),
+  close: jest.fn(),
 };
 
 const rspack = jest.fn().mockReturnValue(compilerMock);

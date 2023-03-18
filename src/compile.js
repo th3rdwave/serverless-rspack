@@ -2,7 +2,6 @@
 
 const _ = require('lodash');
 const BbPromise = require('bluebird');
-const pLimit = require('p-limit');
 const path = require('path');
 const { rspack } = require('@rspack/core');
 const { log, progress } = require('@serverless/utils/log');
@@ -66,23 +65,30 @@ function getExternalModules(stats) {
 
 function rspackAsync(config) {
   return new Promise((resolve, reject) => {
-    rspack(config).run((error, stats) => {
+    const compiler = rspack(config);
+    compiler.run((error, stats) => {
       if (error) {
         reject(error);
       } else {
         resolve(stats);
       }
+      // This crashes if invoked immediately.
+      // Remove when rspack can cleanup itself.
+      setTimeout(() => {
+        compiler.close(() => {});
+      }, 100);
     });
   });
 }
 
-async function rspackCompile(config, logStats) {
+async function rspackCompile(config, ServerlessError) {
   const functionName = config.output.path.split(path.sep).pop();
   const start = Date.now();
 
   let stats = await rspackAsync(config);
   stats = stats.stats ? stats.stats : [stats];
 
+  const logStats = getStatsLogger(config.stats, { ServerlessError });
   stats.forEach(logStats);
 
   const result = stats.map((compileStats) => ({
@@ -98,30 +104,17 @@ async function rspackCompile(config, logStats) {
 }
 
 async function rspackConcurrentCompile(configs, concurrency, ServerlessError) {
-  const errors = [];
-
-  const logStats = getStatsLogger(configs[0].stats, { ServerlessError });
-
-  const limit = pLimit(1);
-  const stats = await Promise.all(
-    configs.map((config) =>
-      limit(async () => {
-        try {
-          return await rspackCompile(config, logStats, ServerlessError);
-        } catch (error) {
-          errors.push(error);
-          return error.stats;
-        }
-      }),
-    ),
-  );
-
-  if (errors.length) {
-    throw new ServerlessError(
-      `Rspack compilation failed:\n\n${errors
-        .map((error) => error.message)
-        .join('\n\n')}`,
-    );
+  const stats = [];
+  try {
+    // For now Rspack is already concurrent, and uses a good amount of memory,
+    // so run in sequence.
+    // TODO: Investigate perf when running multiple builds concurrently.
+    for (const config of configs) {
+      const stat = await rspackCompile(config, ServerlessError);
+      stats.push(stat);
+    }
+  } catch (error) {
+    throw new ServerlessError(`Rspack compilation failed:\n\n${error.message}`);
   }
 
   return stats.flat();
