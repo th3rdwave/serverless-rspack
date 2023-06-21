@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const BbPromise = require('bluebird');
 const path = require('path');
 const { rspack } = require('@rspack/core');
 const { log, progress } = require('@serverless/utils/log');
@@ -18,19 +17,15 @@ function getStatsLogger(statsConfig, { ServerlessError }) {
   };
 }
 
-function isIndividialPackaging() {
-  return _.get(this.serverless, 'service.package.individually');
-}
-
 function getExternalModuleName(module) {
-  const pathArray = module.identifier.split(' ');
-  if (pathArray.length < 2) {
+  const match = module.identifier.match(/external (.+) \[?"?([^"]+)"?\]?/);
+  if (!match || !match[2]) {
     throw new Error(
       `Unable to extract module name from Rspack identifier: ${module.identifier}`,
     );
   }
 
-  const path = pathArray[pathArray.length - 1];
+  const path = match[2];
   const pathComponents = path.split('/');
   const main = pathComponents[0];
 
