@@ -1,6 +1,6 @@
 {
   "name": "serverless-rspack",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Serverless plugin to bundle your javascript with Rspack",
   "author": "Janic Duplessis <janicduplessis@gmail.com>",
   "repository": {
