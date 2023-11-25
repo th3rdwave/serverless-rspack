@@ -18,14 +18,14 @@ function getStatsLogger(statsConfig, { ServerlessError }) {
 }
 
 function getExternalModuleName(module) {
-  const match = module.identifier.match(/external (.+) \[?"?([^"]+)"?\]?/);
-  if (!match || !match[2]) {
+  const match = module.name.match(/external \[?"?([^"]+)"?\]?/);
+  if (!match || !match[1]) {
     throw new Error(
-      `Unable to extract module name from Rspack identifier: ${module.identifier}`,
+      `Unable to extract module name from Rspack identifier: ${module.name}`,
     );
   }
 
-  const path = match[2];
+  const path = match[1];
   const pathComponents = path.split('/');
   const main = pathComponents[0];
 
