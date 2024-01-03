@@ -14,6 +14,7 @@ const _ = require('lodash');
 const BbPromise = require('bluebird');
 const Utils = require('../utils');
 const findWorkspaceRoot = require('find-yarn-workspace-root');
+const fs = require('fs');
 
 class Yarn {
   // eslint-disable-next-line lodash/prefer-constant
@@ -143,11 +144,21 @@ class Yarn {
     );
   }
 
-  static install(cwd, packagerOptions, version) {
+  static install(cwd, packagerOptions, version, sls) {
     if (packagerOptions.noInstall) {
       return BbPromise.resolve();
     }
     const isBerry = Yarn.isBerryVersion(version);
+
+    if (isBerry) {
+      fs.writeFileSync(
+        `${cwd}/.yarnrc.yml`,
+        `supportedArchitectures:\n  os: [linux]\n  cpu: [${
+          sls.service.provider.architecture === 'arm64' ? 'arm64' : 'x64'
+        }]\n  libc: [glibc]`,
+        'utf8',
+      );
+    }
 
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
     const args = ['install'];
@@ -169,12 +180,17 @@ class Yarn {
       args.push(`--network-concurrency ${packagerOptions.networkConcurrency}`);
     }
 
-    return Utils.spawnProcess(command, args, { cwd }).return();
+    return Utils.spawnProcess(command, args, { cwd }).then(() => {
+      if (isBerry) {
+        fs.rmSync(`${cwd}/.yarnrc.yml`);
+        fs.rmSync(`${cwd}/.yarn`, { recursive: true, force: true });
+      }
+    });
   }
 
   // "Yarn install" prunes automatically
-  static prune(cwd, packagerOptions, version) {
-    return Yarn.install(cwd, packagerOptions, version);
+  static prune(cwd, packagerOptions, version, sls) {
+    return Yarn.install(cwd, packagerOptions, version, sls);
   }
 
   static runScripts(cwd, scriptNames) {

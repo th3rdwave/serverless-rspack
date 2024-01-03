@@ -413,6 +413,7 @@ module.exports = {
                       compositeModulePath,
                       this.configuration.packagerOptions,
                       version,
+                      this.serverless,
                     )
                     .then(() => {
                       log.verbose(`Package took [${_.now() - start} ms]`);
@@ -512,6 +513,7 @@ module.exports = {
                           modulePath,
                           this.configuration.packagerOptions,
                           version,
+                          this.serverless,
                         )
                         .tap(() => {
                           log.verbose(
