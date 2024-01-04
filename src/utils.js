@@ -69,7 +69,7 @@ class SpawnError extends Error {
   }
 
   toString() {
-    return `${this.message}\n${this.stderr}`;
+    return `Message:\n${this.message}\n\nError:\n${this.stderr}\n\nOutput:\n${this.stdout}`;
   }
 }
 
