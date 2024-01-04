@@ -166,12 +166,13 @@ class Yarn {
     if (!packagerOptions.noNonInteractive && !isBerry) {
       args.push('--non-interactive');
     }
-    if (!packagerOptions.noFrozenLockfile) {
-      if (isBerry) {
-        args.push('--immutable');
-      } else {
-        args.push('--frozen-lockfile');
-      }
+    if (isBerry) {
+      // Berry defaults to --immutable on CI so have to explicitly disable it.
+      args.push(
+        packagerOptions.noFrozenLockfile ? '--no-immutable' : '--immutable',
+      );
+    } else if (!packagerOptions.noFrozenLockfile) {
+      args.push('--frozen-lockfile');
     }
     if (packagerOptions.ignoreScripts) {
       args.push('--ignore-scripts');
